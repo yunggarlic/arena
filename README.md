@@ -8,3 +8,4 @@ Create your character and fight until the gods cart your soul to hell.
 
 - Open up your command line and navigate to the arena folder.
 - Execute the "arena" file by typing `./arena`
+- Enjoy!
