@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cmath>
 #include "engine.hpp"
 #include "character_functions.hpp"
 
@@ -9,12 +10,17 @@ Character create_character()
 {
   int points = 100;
   string name;
-  int strength = 0;
-  int health = 0;
-  int intellect = 0;
-  int defense = 0;
+  int strength;
+  int health;
+  int intellect;
+  int defense;
   while (points > 0)
   {
+    points = 100;
+    strength = 0;
+    health = 0;
+    intellect = 0;
+    defense = 0;
     cout << "==========================" << endl;
     cout << "====Build your Fighter====" << endl;
     cout << "==========================" << endl;
@@ -84,9 +90,19 @@ Character create_character()
   return Character(name, strength, intellect, health, defense);
 }
 
-Character create_enemy()
+Character create_enemy(Character player)
 {
-  return Character("barbarian", 25, 25, 25, 25);
+  int level = rand() % player.level + 1;
+  int points = level * 100;
+
+  int strength = (20 * level) + rand() % 41 + (-15);
+  int intellect = (20 * level) + rand() % 41 + (-15);
+  int health = (20 * level) + rand() % 41 + (-15);
+  int defense = (20 * level) + rand() % 41 + (-15);
+  int reknown = (20 * level) + rand() % 41 + (-15);
+  int experience = 100 * level + (rand() % 25 + 1);
+
+  return Character("barbarian", strength, intellect, health, defense, reknown, level);
 }
 
 Character battlemaster(Character &player, bool &arena)
@@ -96,21 +112,22 @@ Character battlemaster(Character &player, bool &arena)
   Character new_enemy("barb", 0, 0, 0, 0);
   int x = 1;
   cout << "Get up. It's time for another fight." << endl;
-  cout << "Here's your next opponent: " << endl;
+  cout << "Here's the match up: " << endl;
   while (x == 1)
   {
-    new_enemy = create_enemy();
-    new_enemy.get_stats();
+    new_enemy = create_enemy(player);
+    player.get_versus_stats(new_enemy);
     cout << "Are you willing to accept this fight?" << endl;
     cout << "1) Accept / 2) Decline / 3) Quit" << endl;
     cin >> choice;
     if (choice == "1")
     {
-
       break;
     }
     else if (choice == "2")
     {
+      player.reknown_adjustment(new_enemy, "sub");
+      cout << "You're losing reknown!";
       continue;
     }
     else if (choice == "3")
@@ -129,13 +146,13 @@ Character battlemaster(Character &player, bool &arena)
 
 void character_confirmation(Character new_player)
 {
-  string choice;
   cout << "==========================" << endl;
   cout << "Are you ready to die in glorious combat, " << new_player.get_name() << "?" << endl;
   new_player.get_stats();
   cout << "==========================" << endl;
-  cout << "Enter Anything To Continue" << endl;
-  cin >> choice;
+  cout << "Press Enter to continue";
+  cin.ignore();
+  cin.ignore();
 }
 
 void start_arena(bool &arena)
@@ -144,19 +161,19 @@ void start_arena(bool &arena)
   {
     cout << endl;
   }
-  string move_on;
   cout << "It is a stormy night on the beach.\nThe sound of thunder rolling across the black sea on a night so silent, you could understand the waves as they crash.\n\nYou float over the open water, face down towards the swell; hovering like a corpse.\nDroplets of the salty mist moisten your face. The ocean water is hot like a bath.\n"
        << endl;
-  cout << "Enter anything to continue." << endl;
-  cin >> move_on;
-  cout << "You reach a beach head and your feet touch the ground, a graveyard of jagged shells.\nLooking out to the tide, you notice something peculiar...";
-  cout << "The sea is blood.";
-  cin >> move_on;
+  cout << "Press enter to continue." << endl;
+  cin.ignore();
+  cout << "You reach a beach head and your feet touch the ground, a graveyard of jagged shells.\nLooking out to the tide, you notice something peculiar..." << endl;
+  cout << "The sea is blood." << endl;
+  cin.ignore();
   cout << "You wake up in a brown stone room. The walls drip with red sludge, as do the floor boards above your head. A voluminous drop of blood lands between your eyes, and a crowd above screams and thunderously stomps.\n"
        << endl;
   cout << "It's only hell from here..." << endl;
-  cout << "Contine..." << endl;
-  cin >> move_on;
+  cout << "Continue..." << endl;
+  cin.ignore();
+  cout << "Welcome to the..." << endl;
   cout << " _______  _______  _______  _        _______ " << endl;
   cout << "(  ___  )(  ____ )(  ____ \\( (    /|(  ___  )" << endl;
   cout << "| (   ) || (    )|| (    \\/|  \\  ( || (   ) |" << endl;
@@ -166,37 +183,163 @@ void start_arena(bool &arena)
   cout << "| )   ( || ) \\ \\__| (____/\\| )  \\  || )   ( |" << endl;
   cout << "|/     \\||/   \\__/(_______/|/    )_)|/     \\|" << endl;
   cout << "                                             " << endl;
-  cin >> move_on;
+  cin.ignore();
   cout << endl;
   cout << endl;
   cout << "The battlemaster wakes you up.";
+  cin.ignore();
+  for (int i = 0; i < 20; i++)
+  {
+    cout << endl;
+  }
   arena = true;
 }
 
-void combat(Character &player, Character &enemy)
+bool combat(Character &player, Character &enemy)
 {
   string choice;
+  cout << "Press enter to continue the round.\n";
+
+  //Both opponents have health
   while (player.get_current_health() > 0 && enemy.get_current_health() > 0)
   {
-    cout << "You did " << player.attack(enemy) << " to the enemy" << endl;
-    cout << enemy.get_current_health() << endl;
-    if (enemy.get_current_health() <= 0)
+    cin.ignore();
+    //Intellect decides who gets the first turn
+    if (player.get_intellect() > enemy.get_intellect())
     {
-      break;
+      //Does the attack roll hit?
+      if (player.attack(enemy))
+      {
+        //Did that kill them?
+        if (enemy.get_current_health() <= 0)
+        {
+          cout << "Decapitated." << endl;
+          break;
+        }
+      }
+      //Does attack roll hit?
+      if (enemy.attack(player))
+      {
+        if (player.current_health <= 0)
+        {
+          cout << "Decapitated." << endl;
+          break;
+        }
+      }
     }
-    cout << "They did " << enemy.attack(player) << " to you." << endl;
-    cin >> choice;
+    //Enemy goes first in this case
+    else if (player.get_intellect() < enemy.get_intellect())
+    {
+      if (enemy.attack(player))
+      {
+        if (player.current_health <= 0)
+        {
+          cout << "Decapitated." << endl;
+          break;
+        }
+      }
+      if (player.attack(enemy))
+      {
+        if (enemy.get_current_health() <= 0)
+        {
+          cout << "Decapitated." << endl;
+          break;
+        }
+      }
+    }
+    //The enemies have equal intelligence!?
+    else
+    {
+      //Coin toss decides every round.
+      int coin_flip = rand() % 2 + 1;
+      if (coin_flip == 1)
+      {
+        if (player.attack(enemy))
+        {
+          if (enemy.get_current_health() <= 0)
+          {
+            cout << "Decapitated." << endl;
+            break;
+          }
+        }
+        if (enemy.attack(player))
+        {
+          if (player.current_health <= 0)
+          {
+            cout << "Decapitated." << endl;
+            break;
+          }
+        }
+      }
+      else
+      {
+        if (enemy.attack(player))
+        {
+          if (player.current_health <= 0)
+          {
+            cout << "Decapitated." << endl;
+            break;
+          }
+        }
+        if (player.attack(enemy))
+        {
+          if (enemy.get_current_health() <= 0)
+          {
+            cout << "Decapitated." << endl;
+            break;
+          }
+        }
+      }
+    }
   }
-  if (player.get_current_health() > 0)
+
+  if (player.current_health > enemy.current_health)
   {
-    cout << "You won this time." << endl;
+    cout << "You have won." << endl;
+    cin.ignore();
+    return true;
   }
   else
   {
-    cout << "You lost." << endl;
+    cout << "You have died." << endl;
+    cin.ignore();
+    return false;
   }
-  cout << "Continue to a new day..." << endl;
-  cin >> choice;
+}
+
+bool assess_match(Character &player, Character enemy)
+{
+  string choice;
+  player.experience = player.experience + abs(enemy.experience);
+  player.reknown = player.reknown + abs(enemy.reknown);
+  cout << "You absbored " << enemy.experience << " milliters of enemy experience.";
+  cin.ignore();
+  if (player.experience % 100 > player.level)
+  {
+    for (int i = 1; i <= player.experience - player.level; i++)
+    {
+      player.level_up();
+    }
+    cout << "Your wounds scar over. You are now level " << player.level << endl;
+    cout << "You have " << player.unspent_points << " unspent attribute points." << endl;
+    cout << "Spend them?\n1) Yes / 2) No";
+    cin >> choice;
+    if (choice == "1")
+      return true;
+    else
+      return false;
+  }
+  return false;
+}
+
+void game_over(bool &arena)
+{
+  string choice;
+  cout << "You fought valiantly but your head just ended up on a stick like the rest of us" << endl;
+  cout << endl;
+  cout << "Press Enter for Main Menu";
+  cin.ignore();
+  arena = false;
 }
 
 void play_game()
@@ -210,7 +353,14 @@ void play_game()
     Character new_enemy = battlemaster(new_player, arena);
     if (arena == true)
     {
-      combat(new_player, new_enemy);
+      if (combat(new_player, new_enemy))
+      {
+        assess_match(new_player, new_enemy);
+      }
+      else
+      {
+        game_over(arena);
+      }
     }
   }
 };

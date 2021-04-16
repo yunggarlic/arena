@@ -11,9 +11,10 @@ void about()
   cout << "========Tim Ferrari=======" << endl;
   cout << "==========2021============" << endl;
   cout << "==========================" << endl;
-  cout << "==Type Any Key To Return==" << endl;
+  cout << "==Press Enter to Return===" << endl;
   cout << "==========================" << endl;
-  cin >> choice;
+  cin.ignore();
+  cin.ignore();
 }
 
 int main_menu()
