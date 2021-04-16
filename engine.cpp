@@ -367,7 +367,7 @@ bool assess_match(Character &player, Character enemy)
   string choice;
   player.experience += abs(enemy.experience);
   player.reknown += abs(enemy.reknown);
-  cout << "You absbored " << enemy.experience << " milliters of enemy experience.";
+  cout << "You absbored " << enemy.experience << " milliliters of enemy experience.";
   cin.ignore();
   if (player.experience / 100 > player.level)
   {
