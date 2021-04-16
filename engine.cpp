@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <time.h>
 #include "engine.hpp"
 #include "character_functions.hpp"
 
@@ -102,7 +103,7 @@ Character create_enemy(Character player)
   int reknown = (20 * level) + rand() % 41 + (-15);
   int experience = 100 * level + (rand() % 25 + 1);
 
-  return Character("barbarian", strength, intellect, health, defense, reknown, level);
+  return Character("barbarian", strength, intellect, health, defense, reknown, level, experience);
 }
 
 Character battlemaster(Character &player, bool &arena)
@@ -111,7 +112,23 @@ Character battlemaster(Character &player, bool &arena)
   string choice;
   Character new_enemy("barb", 0, 0, 0, 0);
   int x = 1;
-  cout << "Get up. It's time for another fight." << endl;
+  cout << "          {}" << endl;
+  cout << "         .--." << endl;
+  cout << "        /.--.\\" << endl;
+  cout << "        |====|" << endl;
+  cout << "        |`::`|" << endl;
+  cout << "    .-;`\\..../`;-." << endl;
+  cout << "   /  |...::...|  \\" << endl;
+  cout << "  |   /'''::'''\\   |" << endl;
+  cout << "  ;--'\\   ::   /\\--;" << endl;
+  cout << "  <__>,>._::_.<,<__>" << endl;
+  cout << "  |  |/   ^^   \\|  |" << endl;
+  cout << "  \\::/|        |\\::/" << endl;
+  cout << "  |||\\|        |/||| " << endl;
+  cout << "  ''' |___/\\___| '''" << endl;
+
+  cout << "Get up, meat. It's time for another fight.";
+  cin.ignore();
   cout << "Here's the match up: " << endl;
   while (x == 1)
   {
@@ -127,7 +144,8 @@ Character battlemaster(Character &player, bool &arena)
     else if (choice == "2")
     {
       player.reknown_adjustment(new_enemy, "sub");
-      cout << "You're losing reknown!";
+      cout << "Declining a fight loses you reknown, but you take a rest." << endl;
+      player.regain_health();
       continue;
     }
     else if (choice == "3")
@@ -307,25 +325,62 @@ bool combat(Character &player, Character &enemy)
   }
 }
 
+void stat_adjust(Character &player)
+{
+  int x = 1;
+  while (x == 1)
+  {
+    int strength = 0;
+    int intellect = 0;
+    int defense = 0;
+    int health = 0;
+    int points = player.unspent_points;
+    player.get_stats();
+    cout << "You have " << player.unspent_points << " unspent points remaining" << endl;
+    cout << "Add points to strength: " << endl;
+    cin >> strength;
+    points -= strength;
+    cout << "Add points to intellect: " << endl;
+    cin >> intellect;
+    points -= intellect;
+    cout << "Add points to health: " << endl;
+    cin >> health;
+    points -= health;
+    cout << "Add points to defense: " << endl;
+    cin >> defense;
+    points -= defense;
+    if (points < 0)
+    {
+      cout << "You spent too many points, restarting";
+      continue;
+    }
+    player.spend_points(strength, intellect, health, defense);
+    break;
+  }
+}
 bool assess_match(Character &player, Character enemy)
 {
   string choice;
-  player.experience = player.experience + abs(enemy.experience);
-  player.reknown = player.reknown + abs(enemy.reknown);
+  player.experience += abs(enemy.experience);
+  player.reknown += abs(enemy.reknown);
   cout << "You absbored " << enemy.experience << " milliters of enemy experience.";
   cin.ignore();
-  if (player.experience % 100 > player.level)
+  if (player.experience / 100 > player.level)
   {
-    for (int i = 1; i <= player.experience - player.level; i++)
+    for (int i = 1; i <= (player.experience / 100) - player.level; i++)
     {
       player.level_up();
+      player.current_health += 10;
     }
     cout << "Your wounds scar over. You are now level " << player.level << endl;
     cout << "You have " << player.unspent_points << " unspent attribute points." << endl;
-    cout << "Spend them?\n1) Yes / 2) No";
+    cout << "Spend them?\n1) Yes / 2) No" << endl;
     cin >> choice;
     if (choice == "1")
+    {
+      stat_adjust(player);
       return true;
+    }
     else
       return false;
   }

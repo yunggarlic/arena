@@ -41,6 +41,7 @@ public:
   int damage(Character &enemy);
   bool attack(Character &enemy);
   void reknown_adjustment(Character enemy, string operation);
+  void regain_health();
 };
 
 #endif
