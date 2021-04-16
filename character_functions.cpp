@@ -7,7 +7,7 @@
 using namespace std;
 
 //Player constructor
-Character::Character(string new_name, int new_strength, int new_intellect, int new_health, int new_defense, int new_reknown, int new_level, int new_experience)
+Character::Character(string new_name, int new_strength, int new_intellect, int new_health, int new_defense, int new_renown, int new_level, int new_experience)
 {
   name = new_name;
   base_strength = new_strength;
@@ -17,7 +17,7 @@ Character::Character(string new_name, int new_strength, int new_intellect, int n
   base_defense = new_defense;
   level = new_level;
   experience = new_experience;
-  reknown = new_reknown;
+  renown = new_renown;
   unspent_points = 0;
 }
 
@@ -63,7 +63,7 @@ void Character::get_stats()
 void Character::level_up()
 {
   level++;
-  unspent_points += 100;
+  unspent_points += 20;
 }
 
 void Character::spend_points(int new_strength, int new_intellect, int new_health, int new_defense)
@@ -79,13 +79,13 @@ void Character::spend_points(int new_strength, int new_intellect, int new_health
     current_health = base_total_health;
 }
 
-void Character::reknown_adjustment(Character enemy, string operation)
+void Character::renown_adjustment(Character enemy, string operation)
 {
   if (operation == "add")
-    reknown += enemy.reknown;
+    renown += enemy.renown;
   else if (operation == "sub")
   {
-    reknown -= enemy.reknown;
+    renown -= enemy.renown;
   }
 }
 
@@ -97,7 +97,7 @@ void Character::get_versus_stats(Character enemy)
   cout << "Intellect: " << base_intellect << "      Intellect: " << enemy.base_intellect << endl;
   cout << "Health: " << current_health << "/" << base_total_health << "      Health: " << enemy.current_health << "/" << enemy.base_total_health << endl;
   cout << "Defense: " << base_defense << "      Defense: " << enemy.base_defense << endl;
-  cout << "Reknown: " << reknown << "      Reknown: " << enemy.reknown << endl;
+  cout << "renown: " << renown << "      renown: " << enemy.renown << endl;
 }
 
 vector<string> Character::get_inventory()
@@ -108,9 +108,9 @@ vector<string> Character::get_inventory()
 int Character::damage(Character &enemy)
 {
   double mod_roll = ((double)rand() / RAND_MAX);
-  mod_roll = 0.1 + mod_roll * (0.5 - 0.1);
-  double total_attack = (base_strength * mod_roll) + base_intellect * 0.1;
-  int i_total_attack = (int)total_attack;
+  mod_roll = 0.2 + mod_roll * (0.2 - 0.01); //generates number between .2 and .01
+  double total_attack = (base_strength * mod_roll) + (base_intellect * 0.01);
+  int i_total_attack = (int)total_attack - (enemy.base_defense * .08);
   enemy.current_health -= i_total_attack;
   return i_total_attack;
 }
@@ -118,8 +118,8 @@ int Character::damage(Character &enemy)
 bool Character::attack(Character &enemy)
 {
   int player_to_enemy_damage;
-  int roll = rand() % 20 + 1 + (base_intellect * 0.1);
-  if (roll > (enemy.get_defense() / 5) + (enemy.get_intellect() / 20))
+  int roll = (rand() % 20 + 1 + (base_intellect / 2) * level);
+  if (roll > (rand() % 20 + 1 + enemy.get_defense() / 5) + (enemy.get_intellect() / 10))
   {
     //Commit damage
     player_to_enemy_damage = damage(enemy);

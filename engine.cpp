@@ -9,7 +9,7 @@ using namespace std;
 
 Character create_character()
 {
-  int points = 100;
+  int points = 120;
   string name;
   int strength;
   int health;
@@ -17,7 +17,7 @@ Character create_character()
   int defense;
   while (points > 0)
   {
-    points = 100;
+    points = 120;
     strength = 0;
     health = 0;
     intellect = 0;
@@ -98,16 +98,17 @@ Character create_character()
 Character create_enemy(Character player)
 {
   int level = rand() % player.level + 1;
-  int points = level * 100;
+  int points = level * 5 + 100;
+  int point_divided = points / 4;
 
-  int strength = (20 * level) + rand() % 41 + (-15);
-  int intellect = (20 * level) + rand() % 41 + (-15);
-  int health = (20 * level) + rand() % 41 + (-15);
-  int defense = (20 * level) + rand() % 41 + (-15);
-  int reknown = (20 * level) + rand() % 41 + (-15);
+  int strength = point_divided + ((rand() % 6 + (-3)) * level);
+  int intellect = point_divided + ((rand() % 6 + (-3)) * level);
+  int health = point_divided + ((rand() % 6 + (-3)) * level);
+  int defense = point_divided + ((rand() % 6 + (-3)) * level);
+  int renown = point_divided + (rand() % 8 + 1 * level);
   int experience = 100 * level + (rand() % 25 + 1);
 
-  return Character("barbarian", strength, intellect, health, defense, reknown, level, experience);
+  return Character("barbarian", strength, intellect, health, defense, renown, level, experience);
 }
 
 Character battlemaster(Character &player, bool &arena)
@@ -139,7 +140,7 @@ Character battlemaster(Character &player, bool &arena)
     new_enemy = create_enemy(player);
     player.get_versus_stats(new_enemy);
     cout << "Are you willing to accept this fight?" << endl;
-    cout << "1) Accept / 2) Decline / 3) Quit" << endl;
+    cout << "1) Accept / 2) Rest / 3) Quit" << endl;
     cin >> choice;
     if (choice == "1")
     {
@@ -147,8 +148,8 @@ Character battlemaster(Character &player, bool &arena)
     }
     else if (choice == "2")
     {
-      player.reknown_adjustment(new_enemy, "sub");
-      cout << "Declining a fight loses you reknown, but you take a rest." << endl;
+      player.renown_adjustment(new_enemy, "sub");
+      cout << "Resting restores health but costs you renown." << endl;
       player.regain_health();
       continue;
     }
@@ -366,7 +367,7 @@ bool assess_match(Character &player, Character enemy)
 {
   string choice;
   player.experience += abs(enemy.experience);
-  player.reknown += abs(enemy.reknown);
+  player.renown += abs(enemy.renown);
   cout << "You absbored " << enemy.experience << " milliliters of enemy experience.";
   cin.ignore();
   if (player.experience / 100 > player.level)
