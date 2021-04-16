@@ -73,6 +73,10 @@ void Character::spend_points(int new_strength, int new_intellect, int new_health
   base_intellect += new_intellect;
   base_total_health += new_health;
   base_defense += new_defense;
+  if (current_health + new_health != base_total_health)
+    current_health += new_health;
+  else
+    current_health = base_total_health;
 }
 
 void Character::reknown_adjustment(Character enemy, string operation)

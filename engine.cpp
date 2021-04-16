@@ -370,7 +370,6 @@ bool assess_match(Character &player, Character enemy)
     for (int i = 1; i <= (player.experience / 100) - player.level; i++)
     {
       player.level_up();
-      player.current_health += 10;
     }
     cout << "Your wounds scar over. You are now level " << player.level << endl;
     cout << "You have " << player.unspent_points << " unspent attribute points." << endl;
