@@ -1,12 +1,12 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "enemy_functions.hpp"
+#include "character_functions.hpp"
 
 using namespace std;
 
-//Enemy constructor
-Enemy::Enemy(string new_name, int new_strength, int new_intellect, int new_health, int new_defense)
+//Player constructor
+Character::Character(string new_name, int new_strength, int new_intellect, int new_health, int new_defense)
 {
   name = new_name;
   base_strength = new_strength;
@@ -17,31 +17,35 @@ Enemy::Enemy(string new_name, int new_strength, int new_intellect, int new_healt
 }
 
 //GETTERS
-string Enemy::get_name()
+string Character::get_name()
 {
   return name;
 }
-int Enemy::get_strength()
+string Character::get_character_class()
+{
+  return character_class;
+}
+int Character::get_strength()
 {
   return base_strength;
 }
-int Enemy::get_intellect()
+int Character::get_intellect()
 {
   return base_intellect;
 }
-int Enemy::get_defense()
+int Character::get_defense()
 {
   return base_defense;
 }
-int Enemy::get_current_health()
+int Character::get_current_health()
 {
   return current_health;
 }
-int Enemy::get_total_health()
+int Character::get_total_health()
 {
   return base_total_health;
 }
-void Enemy::get_stats()
+void Character::get_stats()
 {
   cout << "Current Stats:" << endl;
   cout << "Name: " << name << endl;
@@ -50,7 +54,13 @@ void Enemy::get_stats()
   cout << "Health: " << base_total_health << endl;
   cout << "Defense: " << base_defense << endl;
 }
-// void Enemy::attack(Enemy &enemy)
-// {
-//   enemy.current_health = enemy.current_health - base_strength + (base_intellect * 0.3);
-// }
+vector<string> Character::get_inventory()
+{
+  return inventory;
+}
+int Character::attack(Character &enemy)
+{
+  int total_attack = base_strength + (base_intellect * 0.3);
+  enemy.current_health = enemy.current_health - base_strength + (base_intellect * 0.3);
+  return total_attack;
+}
