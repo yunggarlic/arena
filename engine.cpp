@@ -81,11 +81,15 @@ Character create_character()
       cout << "You've over spent points, starting over...";
       continue;
     }
-    else if (points == 0)
-    {
-      break;
-    }
     points = points - defense;
+
+    if (points > 0)
+    {
+      cout << "Spend all of your points, starting over...";
+      continue;
+    }
+    else if (points == 0)
+      break;
   }
 
   return Character(name, strength, intellect, health, defense);
