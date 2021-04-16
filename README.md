@@ -4,7 +4,7 @@ This is a C++ roguelite text adventure that puts you in the center of gladiatori
 
 Create your character and fight until the gods cart your soul to hell.
 
-# Instructions
+### Instructions
 
-Open up your command line and navigate to the arena folder.
-Execute the "arena" file by typing `./arena`
+- Open up your command line and navigate to the arena folder.
+- Execute the "arena" file by typing `./arena`
